@@ -17,6 +17,8 @@ namespace WebApplication8.Middleware
 
             if (requestPath == "/api/v0.0.1/users" && context.Request.Method.ToLower() == "get")
             {
+                await context.Response.WriteAsync("Hello");
+
                 if (context.Request.Query.ContainsKey("_limit"))
                 {
                     int limit = GetQueryStringByKeyName(context, "_limit");

@@ -13,7 +13,7 @@ namespace WebApplication8.Entity.Repository
 
         public OperationStatus Create(User? entity)
         {
-            if (entity == null) return 
+            if (entity == null) return
                     new OperationStatusBuilder()
                     .CreateErrorStatus("Entity must dont have null", StatusName.Error);
 
@@ -42,6 +42,23 @@ namespace WebApplication8.Entity.Repository
             _users.Remove(entity);
             return new OperationStatusBuilder().CreateSuccessfulStatusRemoving();
         }
+        public List<OperationStatus> Delete(List<User>? entitys)
+        {
+            var messages = new List<OperationStatus>();
+
+            if (entitys == null || entitys.Count == 0)
+            {
+                messages.Add(new OperationStatusBuilder().CreateErrorStatus("List for delete entity must dont have null or exist entity", StatusName.Error));
+                return messages;
+            }
+
+            foreach (var userForDelete in entitys)
+            {
+                var operationStatus = Delete(userForDelete);
+                messages.Add(operationStatus);
+            }
+            return messages;
+        }
         public List<User> GetAll()
         {
             return _users;
@@ -52,9 +69,39 @@ namespace WebApplication8.Entity.Repository
 
         public OperationStatus Update(User? entity)
         {
-            throw new NotImplementedException();
-        }
+            if (entity == null) return
+                    new OperationStatusBuilder()
+                    .CreateErrorStatus("Entity must dont have null", StatusName.Error);
 
+            if (!_users.Exists(ex => ex.Id == entity.Id)) return 
+                    new OperationStatusBuilder()
+                  .CreateErrorStatus($"List<Users> dont containt user by id: {entity.Id}", StatusName.Warning);
+
+
+            OperationStatus operationStatus = new OperationStatus();
+
+          var result = _users.Select(s => {
+
+              if (s.Id == entity.Id)
+              {
+                 operationStatus = ChangeOldUserOnNew(s,entity);
+                  return s;
+              }
+              return s;
+          });
+
+            return operationStatus;
+        }
+        private OperationStatus ChangeOldUserOnNew(User oldUser,User newUser)
+        {
+            if (oldUser.Name != newUser.Name) oldUser.Name = newUser.Name;
+
+            if (oldUser.Surname != newUser.Surname) oldUser.Surname = newUser.Surname;
+
+            if (oldUser.Age != newUser.Age) oldUser.Age = newUser.Age;
+
+            return new OperationStatusBuilder().CreateSuccessfulStatusUpdating();
+        }
         private List<User> CreateDeffaultUsers() => new List<User> 
         {
                new User { Id = "1", Name = "Stas", Surname = "ggggas", Age = 19 },

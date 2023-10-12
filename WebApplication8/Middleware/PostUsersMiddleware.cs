@@ -18,15 +18,10 @@ namespace WebApplication8.Middleware
             {
                 User? user = await context.Request.ReadFromJsonAsync<User>();
                 var operationResult = UsersRepository.Create(user);
-                if (operationResult.Status == DI.StatusName.Error || operationResult.Status == DI.StatusName.Warning)
-                {
-                    await context.Response.WriteAsJsonAsync(operationResult);
-                    return;
-                }
                 await context.Response.WriteAsJsonAsync(operationResult);
                 return;
             }
-
+            await Next.Invoke(context);
         }
     }
 }

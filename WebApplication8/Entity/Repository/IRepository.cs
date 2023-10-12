@@ -10,6 +10,6 @@ namespace WebApplication8.Entity.Repository
         R Create(T? entity);
         R Update(T? entity);
         R Delete(T? entity);
-
+        List<R> Delete(List<T>? entitys);
     }
 }

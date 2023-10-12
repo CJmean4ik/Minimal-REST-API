@@ -24,6 +24,9 @@ namespace WebApplication8
 
             app.UseMiddleware<GetUsersMiddleware>();
             app.UseMiddleware<PostUsersMiddleware>();
+            app.UseMiddleware<DeleteUsersMiddleware>();
+            app.UseMiddleware<PutUserMiddleware>();
+
             await app.RunAsync();
         }
     }
