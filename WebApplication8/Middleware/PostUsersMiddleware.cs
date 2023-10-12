@@ -10,7 +10,6 @@ namespace WebApplication8.Middleware
             : base(nextMiddleware, usersRepository, erorHandler)
         {
         }
-
         public override async Task InvokeAsync(HttpContext context)
         {
             string requestPath = context.Request.Path;
