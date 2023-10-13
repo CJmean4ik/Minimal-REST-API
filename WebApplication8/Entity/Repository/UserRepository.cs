@@ -35,11 +35,13 @@ namespace WebApplication8.Entity.Repository
                     new OperationStatusBuilder()
                     .CreateErrorStatus("Entity must dont have null", StatusName.Error);
 
-            if (!_users.Contains(entity)) return
+            if (!_users.Exists(ex => ex.Id == entity.Id)) return
                      new OperationStatusBuilder()
                    .CreateErrorStatus("Entity not exist in List<Users>", StatusName.Warning);
 
-            _users.Remove(entity);
+
+            var entityForDelete = _users.Find(f => f.Id == entity.Id)!;
+            _users.Remove(entityForDelete);
             return new OperationStatusBuilder().CreateSuccessfulStatusRemoving();
         }
         public List<OperationStatus> Delete(List<User>? entitys)
