@@ -69,6 +69,9 @@ namespace WebApplication8.Entity.Repository
 
         public OperationStatus Update(User? entity)
         {
+            OperationStatus operationStatus = new OperationStatus();
+
+
             if (entity == null) return
                     new OperationStatusBuilder()
                     .CreateErrorStatus("Entity must dont have null", StatusName.Error);
@@ -78,17 +81,13 @@ namespace WebApplication8.Entity.Repository
                   .CreateErrorStatus($"List<Users> dont containt user by id: {entity.Id}", StatusName.Warning);
 
 
-            OperationStatus operationStatus = new OperationStatus();
-
-          var result = _users.Select(s => {
-
-              if (s.Id == entity.Id)
-              {
-                 operationStatus = ChangeOldUserOnNew(s,entity);
-                  return s;
-              }
-              return s;
-          });
+            foreach (var user in _users)
+            {
+                if (user.Id == entity.Id)
+                {
+                    operationStatus = ChangeOldUserOnNew(user,entity);
+                }
+            }
 
             return operationStatus;
         }

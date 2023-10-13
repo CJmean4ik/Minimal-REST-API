@@ -14,7 +14,7 @@ namespace WebApplication8.Middleware
         public override async Task InvokeAsync(HttpContext context)
         {
             string requestPath = context.Request.Path;
-            if (requestPath == "/api/v0.0.1/users/update" && context.Request.Method.ToLower() == "delete")
+            if (requestPath == "/api/v0.0.1/users/update" && context.Request.Method.ToLower() == "put")
             {
                 var UserforUpdate = await context.Request.ReadFromJsonAsync<User>();
                 var operationStatus = UsersRepository.Update(UserforUpdate);

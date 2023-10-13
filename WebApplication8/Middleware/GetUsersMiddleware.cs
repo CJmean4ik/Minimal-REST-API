@@ -16,8 +16,7 @@ namespace WebApplication8.Middleware
             string requestPath = context.Request.Path;
 
             if (requestPath == "/api/v0.0.1/users" && context.Request.Method.ToLower() == "get")
-            {
-                await context.Response.WriteAsync("Hello");
+            { 
 
                 if (context.Request.Query.ContainsKey("_limit"))
                 {
@@ -45,6 +44,7 @@ namespace WebApplication8.Middleware
                     return;
                 }
                 await SendAllUsersInResponceAsync(context);
+                return;
             }
             await Next.Invoke(context);
         }
