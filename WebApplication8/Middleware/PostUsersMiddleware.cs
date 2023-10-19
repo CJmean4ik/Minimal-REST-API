@@ -4,13 +4,17 @@ using WebApplication8.Entity.Repository;
 
 namespace WebApplication8.Middleware
 {
-    public class PostUsersMiddleware : OptionsMiddleware
+    public class PostUsersMiddleware : OptionsMiddleware<PostUsersMiddleware>
     {
-        public PostUsersMiddleware(RequestDelegate nextMiddleware, IUserRepository usersRepository, IErorHandler erorHandler) 
-            : base(nextMiddleware, usersRepository, erorHandler)
+        public PostUsersMiddleware(RequestDelegate nextMiddleware,
+                                   IUserRepository usersRepository,
+                                   IErorHandler erorHandler,
+                                   ILogger<PostUsersMiddleware> logger)
+                                   : base(nextMiddleware, usersRepository, erorHandler, logger)
         {
         }
-        public override async Task InvokeAsync(HttpContext context)
+
+        public override async Task ProccesingRequest(HttpContext context)
         {
             string requestPath = context.Request.Path;
 

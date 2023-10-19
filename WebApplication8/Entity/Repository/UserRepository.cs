@@ -5,21 +5,30 @@ namespace WebApplication8.Entity.Repository
     public class UserRepository : IUserRepository
     {
         private List<User> _users;
-
-        public UserRepository()
+        private ILogger<UserRepository> _repositoryLogger;
+        public UserRepository(ILogger<UserRepository> repositoryLogger)
         {
             _users = CreateDeffaultUsers();
+            _repositoryLogger = repositoryLogger;
         }
 
         public OperationStatus Create(User? entity)
         {
-            if (entity == null) return
-                    new OperationStatusBuilder()
-                    .CreateErrorStatus("Entity must dont have null", StatusName.Error);
+            if (entity == null)
+            {
+                _repositoryLogger.LogWarning("Client send entity which contain null");
+                return new OperationStatusBuilder()
+                  .CreateErrorStatus("Entity must dont have null", StatusName.Warning);
+            }
 
-            if (_users.Contains(entity)) return
-                    new OperationStatusBuilder()
+            if (_users.Contains(entity))
+            {
+                _repositoryLogger.LogWarning("Entity which cliend cend, allready contain");
+                return new OperationStatusBuilder()
                   .CreateErrorStatus("Entity allredy existing in List<Users>", StatusName.Warning);
+            }
+
+                   
 
 
             string lastUserId = _users.Last().Id;
@@ -27,6 +36,8 @@ namespace WebApplication8.Entity.Repository
             entity.Id = newUserId.ToString();
 
             _users.Add(entity);
+
+            _repositoryLogger.LogInformation("Client succsesful created entity " + entity.ToString());
             return new OperationStatusBuilder().CreateSuccessfulStatusAdding(entity.ToString());
         }
         public OperationStatus Delete(User? entity)
