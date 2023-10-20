@@ -20,8 +20,12 @@ namespace WebApplication8.Middleware
             if (requestPath == "/api/v0.0.1/users/update" && context.Request.Method.ToLower() == "put")
             {
                 var UserforUpdate = await context.Request.ReadFromJsonAsync<User>();
-                var operationStatus = UsersRepository.Update(UserforUpdate);
-                await context.Response.WriteAsJsonAsync(operationStatus);
+                var operationResult = UsersRepository.Update(UserforUpdate);
+                Logger.LogInformation("User updating status:" +
+                   " Status: " + operationResult.Status +
+                   " Message: " + operationResult.Title +
+                   " Time: " + DateTime.Now);
+                await context.Response.WriteAsJsonAsync(operationResult);
                 return;
             }
             return;

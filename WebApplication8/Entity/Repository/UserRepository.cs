@@ -42,17 +42,26 @@ namespace WebApplication8.Entity.Repository
         }
         public OperationStatus Delete(User? entity)
         {
-            if (entity == null) return
-                    new OperationStatusBuilder()
-                    .CreateErrorStatus("Entity must dont have null", StatusName.Error);
+            if (entity == null)
+            {
+                _repositoryLogger.LogWarning("Client send entity which contain null");
+                return new OperationStatusBuilder()
+                  .CreateErrorStatus("Entity must dont have null", StatusName.Warning);
+            }
 
-            if (!_users.Exists(ex => ex.Id == entity.Id)) return
-                     new OperationStatusBuilder()
-                   .CreateErrorStatus("Entity not exist in List<Users>", StatusName.Warning);
+
+            if (!_users.Exists(ex => ex.Id == entity.Id))
+            {
+                _repositoryLogger.LogWarning("In List<User> has dont find a this users: " + entity.Id);
+                return new OperationStatusBuilder()
+                  .CreateErrorStatus("Entity not exist in List<Users>", StatusName.Warning);
+            }
+               
 
 
             var entityForDelete = _users.Find(f => f.Id == entity.Id)!;
             _users.Remove(entityForDelete);
+            _repositoryLogger.LogInformation("Client succsesful removed entity " + entity.ToString());
             return new OperationStatusBuilder().CreateSuccessfulStatusRemoving();
         }
         public List<OperationStatus> Delete(List<User>? entitys)
@@ -79,15 +88,18 @@ namespace WebApplication8.Entity.Repository
         public User? GetById(string Id) => _users.Find(p => p.Id == Id);     
         public User? GetById(int Id) => GetById(Id.ToString());
         public List<User> GetByLimit(int limit) => _users.Take(limit).ToList();
-
         public OperationStatus Update(User? entity)
         {
             OperationStatus operationStatus = new OperationStatus();
 
 
-            if (entity == null) return
-                    new OperationStatusBuilder()
-                    .CreateErrorStatus("Entity must dont have null", StatusName.Error);
+            if (entity == null)
+            {
+                _repositoryLogger.LogWarning("Client send entity which contain null");
+                return new OperationStatusBuilder()
+                  .CreateErrorStatus("Entity must dont have null", StatusName.Warning);
+            }
+
 
             if (!_users.Exists(ex => ex.Id == entity.Id)) return 
                     new OperationStatusBuilder()
@@ -106,13 +118,33 @@ namespace WebApplication8.Entity.Repository
         }
         private OperationStatus ChangeOldUserOnNew(User oldUser,User newUser)
         {
-            if (oldUser.Name != newUser.Name) oldUser.Name = newUser.Name;
+            bool ItChanged = false;
 
-            if (oldUser.Surname != newUser.Surname) oldUser.Surname = newUser.Surname;
+            if (oldUser.Name != newUser.Name)
+            {
+                oldUser.Name = newUser.Name;
+                ItChanged = true;
+                _repositoryLogger.LogInformation("A change was noticed for the property Users.name. New value: " + newUser.Name + " Old value: " + oldUser.Name);
+            }
 
-            if (oldUser.Age != newUser.Age) oldUser.Age = newUser.Age;
+            if (oldUser.Surname != newUser.Surname)
+            {
+                oldUser.Surname = newUser.Surname;
+                ItChanged = true;
+                _repositoryLogger.LogInformation("A change was noticed for the property Users.Surname. New value: " + newUser.Surname + " Old value: " + oldUser.Surname);
+            }
 
-            return new OperationStatusBuilder().CreateSuccessfulStatusUpdating();
+            if (oldUser.Age != newUser.Age)
+            {
+                oldUser.Age = newUser.Age;
+                ItChanged = true;
+                _repositoryLogger.LogInformation("A change was noticed for the property Users.Age. New value: " + newUser.Age + " Old value: " + oldUser.Age);
+            }
+
+            if (ItChanged) return new OperationStatusBuilder().CreateSuccessfulStatusUpdating();
+
+            _repositoryLogger.LogInformation("Nothing has been changed in enityty");
+            return new OperationStatusBuilder().CreateErrorStatus(" The user sent the data for changes, but these new data corresponded to the old ones. Changes not applied", StatusName.Warning);
         }
         private List<User> CreateDeffaultUsers() => new List<User> 
         {

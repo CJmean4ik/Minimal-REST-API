@@ -22,6 +22,10 @@ namespace WebApplication8.Middleware
             {
                 User? user = await context.Request.ReadFromJsonAsync<User>();
                 var operationResult = UsersRepository.Create(user);
+                Logger.LogInformation("User creation status:" +
+                    " Status: " + operationResult.Status + 
+                    " Message: " + operationResult.Title +
+                    " Time: " + DateTime.Now);
                 await context.Response.WriteAsJsonAsync(operationResult);
                 return;
             }
