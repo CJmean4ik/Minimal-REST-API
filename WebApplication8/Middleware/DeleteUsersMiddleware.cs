@@ -26,7 +26,7 @@ namespace WebApplication8.Middleware
                 await context.Response.WriteAsJsonAsync(operationResults);
                 return;
             }
-            return;
+            await Next.Invoke(context);
         }
         private void LogginRemovingUsers(List<OperationStatus>? operationStatuses)
         {

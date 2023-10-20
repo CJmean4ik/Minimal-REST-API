@@ -21,10 +21,10 @@ namespace WebApplication8.Middleware
             if (requestPath == "/api/v0.0.1/users" && context.Request.Method.ToLower() == "get")
             {
                 var result = await QueryProccesingForLimitParameterAsync(context);
-                if (!result.done || result.haveEror) return;
+                if (result.done || result.haveEror) return;
 
                 result = await QueryProccesingForIdParameterAsync(context);
-                if (!result.done || result.haveEror) return;
+                if (result.done || result.haveEror) return;
 
                 await SendAllUsersInResponceAsync(context);
                 return;
@@ -49,7 +49,7 @@ namespace WebApplication8.Middleware
             }
 
             await SendLimitUsersInResponceAsync(context, limit);
-            return (true, true);
+            return (true, false);
 
         }
         private async Task<(bool done, bool haveEror)> QueryProccesingForIdParameterAsync(HttpContext context)
@@ -68,7 +68,7 @@ namespace WebApplication8.Middleware
                 }
 
                 await SendUsersByIdInResponceAsync(context, id.ToString());
-                return (true, true);
+                return (true, false);
 
         }
         private int GetQueryStringByKeyName(HttpContext httpContext, string keyName)
